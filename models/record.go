@@ -31,8 +31,5 @@ type CreatedRecord struct {
 }
 
 type CreateRecordResponse struct {
-	Message  string        `json:"message"`
-	Username string        `json:"username"`
-	UserID   string        `json:"userId"`
-	Record   CreatedRecord `json:"record"`
+	ID string `json:"id"`
 }

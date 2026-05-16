@@ -80,9 +80,6 @@ func CreateRecord(db *sql.DB, username string, req models.CreateRecordRequest) (
 	}
 
 	return models.CreateRecordResponse{
-		Message:  "record payload received",
-		Username: username,
-		UserID:   user.ID,
-		Record:   record,
+		ID: record.ID,
 	}, nil
 }

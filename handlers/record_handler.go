@@ -82,6 +82,6 @@ func CreateRecord(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusOK, result)
+		ctx.JSON(http.StatusCreated, result)
 	}
 }
