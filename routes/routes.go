@@ -14,6 +14,7 @@ func RegisterRoutes(r *gin.Engine, db *sql.DB) {
 	users.GET("/habits", handlers.GetHabits(db))
 
 	users.GET("/records", handlers.GetRecords(db))
+	users.POST("/records", handlers.CreateRecord(db))
 
 	users.GET("/progress", handlers.GetProgress(db))
 }

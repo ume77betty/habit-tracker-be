@@ -60,3 +60,40 @@ func GetRecordsByUserID(db *sql.DB, userID string) ([]models.Record, error) {
 
 	return records, nil
 }
+
+func CreateRecord(db *sql.DB, userID string, req models.CreateRecordRequest) (models.CreatedRecord, error) {
+	query := `
+		INSERT INTO records (
+			user_id,
+			habit_id,
+			record_date,
+			start_time,
+			end_time,
+			reflection,
+			mood_level,
+			tz,
+			is_deleted
+		)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, FALSE)
+		RETURNING id
+	`
+
+	var record models.CreatedRecord
+
+	err := db.QueryRow(
+		query,
+		userID,
+		req.HabitID,
+		req.RecordDate,
+		req.StartTime,
+		req.EndTime,
+		req.Reflection,
+		req.MoodLevel,
+		req.TZ,
+	).Scan(&record.ID)
+
+	if err != nil {
+		return models.CreatedRecord{}, err
+	}
+	return record, nil
+}
