@@ -61,7 +61,7 @@ func GetRecordsByUserID(db *sql.DB, userID string) ([]models.Record, error) {
 	return records, nil
 }
 
-func CreateRecord(db *sql.DB, userID string, req models.CreateRecordRequest) (models.CreatedRecord, error) {
+func CreateRecord(tx *sql.Tx, userID string, req models.CreateRecordRequest) (models.CreatedRecord, error) {
 	query := `
 		INSERT INTO records (
 			user_id,
@@ -80,7 +80,7 @@ func CreateRecord(db *sql.DB, userID string, req models.CreateRecordRequest) (mo
 
 	var record models.CreatedRecord
 
-	err := db.QueryRow(
+	err := tx.QueryRow(
 		query,
 		userID,
 		req.HabitID,

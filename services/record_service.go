@@ -24,6 +24,12 @@ func GetRecordsByUsername(db *sql.DB, username string) ([]models.Record, error) 
 }
 
 func CreateRecord(db *sql.DB, username string, req models.CreateRecordRequest) (models.CreateRecordResponse, error) {
+	tx, err := db.Begin()
+	if err != nil {
+		return models.CreateRecordResponse{}, err
+	}
+	defer tx.Rollback()
+
 	startTime, err := time.Parse(time.RFC3339, req.StartTime)
 	if err != nil {
 		return models.CreateRecordResponse{}, ErrInvalidRecordTime
@@ -58,12 +64,17 @@ func CreateRecord(db *sql.DB, username string, req models.CreateRecordRequest) (
 		return models.CreateRecordResponse{}, err
 	}
 
-	record, err := repositories.CreateRecord(db, user.ID, req)
+	record, err := repositories.CreateRecord(tx, user.ID, req)
 	if err != nil {
 		return models.CreateRecordResponse{}, err
 	}
 
-	err = repositories.UpdateHabitLastRecordedAt(db, req.HabitID, startTime)
+	err = repositories.UpdateHabitLastRecordedAt(tx, req.HabitID, startTime)
+	if err != nil {
+		return models.CreateRecordResponse{}, err
+	}
+
+	err = tx.Commit()
 	if err != nil {
 		return models.CreateRecordResponse{}, err
 	}

@@ -7,14 +7,14 @@ import (
 	"github.com/ume77betty/habit-tracker-be/models"
 )
 
-func UpdateHabitLastRecordedAt(db *sql.DB, habitID string, recordedAt time.Time) error {
+func UpdateHabitLastRecordedAt(tx *sql.Tx, habitID string, recordedAt time.Time) error {
 	query := `
 		UPDATE habits
 		SET last_recorded_at = $1, updated_at = now()
 		WHERE id = $2
 			AND (last_recorded_at IS NULL OR last_recorded_at < $1)
 	`
-	_, err := db.Exec(query, recordedAt, habitID)
+	_, err := tx.Exec(query, recordedAt, habitID)
 	if err != nil {
 		return err
 	}
