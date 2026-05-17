@@ -23,17 +23,17 @@ func GetHabitsByUsername(db *sql.DB, username string) ([]models.Habit, error) {
 }
 
 func CreateHabit(db *sql.DB, username string, req models.CreateHabitRequest) (models.CreateHabitResponse, error) {
-	user, err := repositories.GetUserByUsername(db, username)
-	if err != nil {
-		return models.CreateHabitResponse{}, err
-	}
-
 	if req.TargetDays <= 0 {
 		return models.CreateHabitResponse{}, ErrInvalidTargetDays
 	}
 
 	if len(strings.TrimSpace(req.Name)) <= 0 {
 		return models.CreateHabitResponse{}, ErrInvalidName
+	}
+
+	user, err := repositories.GetUserByUsername(db, username)
+	if err != nil {
+		return models.CreateHabitResponse{}, err
 	}
 
 	exists, err := repositories.CheckDuplicateHabitName(db, user.ID, req.Name)
