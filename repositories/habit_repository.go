@@ -146,3 +146,22 @@ func CreateHabit(db *sql.DB, userID string, req models.CreateHabitRequest) (mode
 	}
 	return habit, nil
 }
+
+func CheckDuplicateHabitName(db *sql.DB, userID string, habitName string) (bool, error) {
+	var exists bool
+	query := `
+		SELECT EXISTS (
+			SELECT 1
+			FROM habits
+			WHERE user_id = $1 AND name = $2
+		)
+	`
+
+	err := db.QueryRow(query, userID, habitName).Scan(&exists)
+
+	if err != nil {
+		return false, err
+	}
+
+	return exists, nil
+}

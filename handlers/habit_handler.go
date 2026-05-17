@@ -53,6 +53,28 @@ func CreateHabit(db *sql.DB) gin.HandlerFunc {
 				})
 				return
 			}
+
+			if errors.Is(err, services.ErrInvalidName) {
+				ctx.JSON(http.StatusNotFound, gin.H{
+					"error": "invalid name",
+				})
+				return
+			}
+
+			if errors.Is(err, services.ErrInvalidTargetDays) {
+				ctx.JSON(http.StatusNotFound, gin.H{
+					"error": "invalid target days",
+				})
+				return
+			}
+
+			if errors.Is(err, services.ErrDuplicateName) {
+				ctx.JSON(http.StatusNotFound, gin.H{
+					"error": "duplicate habit name",
+				})
+				return
+			}
+
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": "internal server error",
 			})

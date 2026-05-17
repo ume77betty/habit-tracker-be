@@ -2,10 +2,16 @@ package services
 
 import (
 	"database/sql"
+	"errors"
+	"strings"
 
 	"github.com/ume77betty/habit-tracker-be/models"
 	"github.com/ume77betty/habit-tracker-be/repositories"
 )
+
+var ErrInvalidName = errors.New("name cannot be empty")
+var ErrInvalidTargetDays = errors.New("target days should larger than zero")
+var ErrDuplicateName = errors.New("duplicate habit name")
 
 func GetHabitsByUsername(db *sql.DB, username string) ([]models.Habit, error) {
 	user, err := repositories.GetUserByUsername(db, username)
@@ -20,6 +26,24 @@ func CreateHabit(db *sql.DB, username string, req models.CreateHabitRequest) (mo
 	user, err := repositories.GetUserByUsername(db, username)
 	if err != nil {
 		return models.CreateHabitResponse{}, err
+	}
+
+	if req.TargetDays <= 0 {
+		return models.CreateHabitResponse{}, ErrInvalidTargetDays
+	}
+
+	if len(strings.TrimSpace(req.Name)) <= 0 {
+		return models.CreateHabitResponse{}, ErrInvalidName
+	}
+
+	exists, err := repositories.CheckDuplicateHabitName(db, user.ID, req.Name)
+
+	if err != nil {
+		return models.CreateHabitResponse{}, err
+	}
+
+	if exists == true {
+		return models.CreateHabitResponse{}, ErrDuplicateName
 	}
 
 	habit, err := repositories.CreateHabit(db, user.ID, req)
