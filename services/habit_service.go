@@ -15,3 +15,17 @@ func GetHabitsByUsername(db *sql.DB, username string) ([]models.Habit, error) {
 
 	return repositories.GetHabitsByUserID(db, user.ID)
 }
+
+func CreateHabit(db *sql.DB, username string, req models.CreateHabitRequest) (models.CreateHabitResponse, error) {
+	user, err := repositories.GetUserByUsername(db, username)
+	if err != nil {
+		return models.CreateHabitResponse{}, err
+	}
+
+	habit, err := repositories.CreateHabit(db, user.ID, req)
+	if err != nil {
+		return models.CreateHabitResponse{}, err
+	}
+
+	return models.CreateHabitResponse{ID: habit.ID}, nil
+}

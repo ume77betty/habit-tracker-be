@@ -13,3 +13,18 @@ type Habit struct {
 	UpdatedAt      *time.Time `json:"updatedAt,omitempty"`
 	IsActive       bool       `json:"isActive"`
 }
+
+type CreateHabitRequest struct {
+	Name       string `json:"name" binding:"required"`
+	IconName   string `json:"iconName" binding:"required"`
+	Color      string `json:"color" binding:"required"`
+	TargetDays int    `json:"targetDays" binding:"required"`
+}
+
+type CreateHabitResponse struct {
+	ID string `json:"id"`
+}
+
+type CreatedHabit struct {
+	ID string `json:"id"`
+}

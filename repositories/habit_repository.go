@@ -117,3 +117,32 @@ func GetHabitByIDAndUserID(db *sql.DB, habitID string, userID string) (*models.H
 
 	return &habit, nil
 }
+
+func CreateHabit(db *sql.DB, userID string, req models.CreateHabitRequest) (models.CreatedHabit, error) {
+	var habit models.CreatedHabit
+	query := `
+		INSERT INTO habits (
+			user_id,
+			name,
+			icon_name,
+			color,
+			target_days
+		)
+		VALUES ($1, $2, $3, $4, $5)
+		RETURNING id
+	`
+
+	err := db.QueryRow(
+		query,
+		userID,
+		req.Name,
+		req.IconName,
+		req.Color,
+		req.TargetDays,
+	).Scan(&habit.ID)
+
+	if err != nil {
+		return models.CreatedHabit{}, err
+	}
+	return habit, nil
+}
